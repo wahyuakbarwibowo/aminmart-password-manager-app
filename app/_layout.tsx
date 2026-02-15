@@ -11,7 +11,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="index" options={{ title: 'Passwords' }} />
+        <Stack.Screen name="index" options={{ title: 'Aminmart Password Manager' }} />
         <Stack.Screen
           name="passwords/add"
           options={{ presentation: 'modal', title: 'Add Password' }}
