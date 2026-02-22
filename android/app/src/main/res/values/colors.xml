@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pink_primary">#E91E8A</color>
+    <color name="pink_secondary">#F48FB1</color>
+    <color name="pink_primary_variant">#C2185B</color>
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_dark">#151718</color>
+    <color name="on_background_light">#11181C</color>
+    <color name="on_background_dark">#ECEDEE</color>
+</resources>
