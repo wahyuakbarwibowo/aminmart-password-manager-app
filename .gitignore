@@ -53,6 +53,21 @@ captures/
 *.keystore
 keystore.properties
 
+# Secret files and environment variables
+*.pem
+*.p12
+*.p8
+*.key
+*.secret
+*.env
+.env
+.env.local
+.env.*.local
+*.secrets
+secrets.json
+credentials.json
+api_keys.properties
+
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 .cxx/
