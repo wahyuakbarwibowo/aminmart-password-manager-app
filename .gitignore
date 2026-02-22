@@ -48,9 +48,10 @@ captures/
 .idea/modules.xml
 .idea/misc.xml
 
-# Keystore files
+# Keystore files (keep .properties, ignore actual keystores)
 *.jks
 *.keystore
+*.bks
 keystore.properties
 
 # Secret files and environment variables
