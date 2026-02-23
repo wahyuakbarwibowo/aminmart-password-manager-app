@@ -8,17 +8,20 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Safe encryption service using Android Keystore and AES-GCM.
- * 
+ *
  * Security features:
  * - AES-256-GCM: Authenticated encryption with associated data
  * - Android Keystore: Keys stored in hardware-backed secure enclave
  * - Unique nonce per encryption operation
  * - Key attestation (on supported devices)
  */
-class EncryptionService {
+@Singleton
+class EncryptionService @Inject constructor() {
 
     companion object {
         private const val ANDROID_KEY_STORE = "AndroidKeyStore"

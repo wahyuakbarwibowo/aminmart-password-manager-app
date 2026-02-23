@@ -1,15 +1,16 @@
 package com.aminmart.passwordmanager.data.security
 
 import android.util.Base64
-import androidx.security.crypto.Encryptor
-import androidx.security.crypto.Decryptor
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Service for encrypting sensitive text data (passwords, notes).
  * Uses AES-256-GCM for authenticated encryption.
  */
-class SecretEncryptionService(
+@Singleton
+class SecretEncryptionService @Inject constructor(
     private val encryptionService: EncryptionService
 ) {
     /**

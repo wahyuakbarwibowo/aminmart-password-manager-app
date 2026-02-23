@@ -8,6 +8,11 @@
 -dontobfuscate
 
 # ===========================================
+# Google Error Prone Annotations (missing from Tink)
+# ===========================================
+-dontwarn com.google.errorprone.annotations.**
+
+# ===========================================
 # Hilt (Dependency Injection)
 # ===========================================
 -keep class dagger.hilt.** { *; }
@@ -16,18 +21,6 @@
 -keep class * extends dagger.hilt.android.internal.lifecycle.HiltViewModelFactory { *; }
 -keep class dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 -dontwarn dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper
-
-# ===========================================
-# Room (Database)
-# ===========================================
--keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class *
--dontwarn androidx.room.paging.**
--keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class * {
-    *;
-}
--keep class com.aminmart.passwordmanager.data.local.** { *; }
 
 # ===========================================
 # Kotlin
@@ -98,7 +91,7 @@
 -keep class androidx.compose.** { *; }
 -dontwarn androidx.compose.**
 -keepclassmembers,allowobfuscation class * extends androidx.compose.runtime.Composer {
-    *** <init>(***);
+    void <init>(java.lang.Object...);
 }
 
 # ===========================================

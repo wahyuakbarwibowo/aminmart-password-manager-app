@@ -1,11 +1,14 @@
 package com.aminmart.passwordmanager.data.security
 
 import java.security.SecureRandom
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Service for generating secure random passwords.
  */
-class PasswordGeneratorService {
+@Singleton
+class PasswordGeneratorService @Inject constructor() {
 
     companion object {
         private const val DEFAULT_LENGTH = 16
@@ -55,10 +58,10 @@ class PasswordGeneratorService {
 
         // Ensure at least one character from each selected type
         val requiredChars = buildString {
-            if (includeLowercase) append(LOWERCASE.random(secureRandom))
-            if (includeUppercase) append(UPPERCASE.random(secureRandom))
-            if (includeDigits) append(DIGITS.random(secureRandom))
-            if (includeSpecial) append(SPECIAL.random(secureRandom))
+            if (includeLowercase) append(LOWERCASE.random())
+            if (includeUppercase) append(UPPERCASE.random())
+            if (includeDigits) append(DIGITS.random())
+            if (includeSpecial) append(SPECIAL.random())
         }
 
         // Generate remaining characters
@@ -69,13 +72,13 @@ class PasswordGeneratorService {
         }
 
         val randomChars = (1..remainingLength)
-            .map { charSet.random(secureRandom) }
+            .map { charSet.random() }
             .joinToString("")
 
         // Combine and shuffle
-        val password = (requiredChars + randomChars)
-            .shuffled(secureRandom)
-            .joinToString("")
+        val passwordList = (requiredChars + randomChars).toMutableList()
+        passwordList.shuffle()
+        val password = passwordList.joinToString("")
 
         return password.take(actualLength)
     }
@@ -96,12 +99,12 @@ class PasswordGeneratorService {
         )
 
         val words = (1..wordCount)
-            .map { commonWords.random(secureRandom) }
+            .map { commonWords.random() }
             .joinToString("-")
 
         val suffix = when {
-            includeNumbers && includeSpecial -> "${(100..999).random(secureRandom)}!"
-            includeNumbers -> "${(100..999).random(secureRandom)}"
+            includeNumbers && includeSpecial -> "${(100..999).random()}!"
+            includeNumbers -> "${(100..999).random()}"
             includeSpecial -> "!"
             else -> ""
         }

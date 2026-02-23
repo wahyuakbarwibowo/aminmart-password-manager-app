@@ -8,10 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aminmart.passwordmanager.ui.components.VaultSetupDialog
 
 @Composable
 fun AuthScreen(
@@ -93,13 +93,13 @@ private fun AuthScreenContent(
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = if (uiState.needsSetup) ImeAction.Next else ImeAction.Done,
-                    keyboardType = KeyboardOptions.Password
+                    keyboardType = KeyboardType.Password
                 ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.errorMessage != null
             )
-            
+
             if (uiState.needsSetup) {
                 OutlinedTextField(
                     value = uiState.confirmPassword,
@@ -108,7 +108,7 @@ private fun AuthScreenContent(
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardOptions.Password
+                        keyboardType = KeyboardType.Password
                     ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),

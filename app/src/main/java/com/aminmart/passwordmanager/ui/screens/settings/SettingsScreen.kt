@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aminmart.passwordmanager.data.repository.ImportMode
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,9 +184,7 @@ fun SettingsScreen(
     // Status messages
     uiState.statusMessage?.let { message ->
         Snackbar(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomCenter),
+            modifier = Modifier.padding(16.dp),
             action = {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(

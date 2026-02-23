@@ -1,18 +1,12 @@
 package com.aminmart.passwordmanager.data.local
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
  * Settings entity for storing app configuration.
  */
-@Entity(tableName = "settings")
 data class SettingsEntity(
-    @PrimaryKey
+    val id: Long = 0,
     val key: String,
-    
     val value: String,
-    
     val updatedAt: Long = System.currentTimeMillis()
 )
 

@@ -1,11 +1,10 @@
 package com.aminmart.passwordmanager.data.repository
 
-import com.aminmart.passwordmanager.data.local.PasswordCategoryConverter
-import com.aminmart.passwordmanager.data.local.PasswordDao
+import com.aminmart.passwordmanager.data.local.PasswordDatabase
 import com.aminmart.passwordmanager.data.local.PasswordEntity
+import com.aminmart.passwordmanager.data.local.PasswordCategory
 import com.aminmart.passwordmanager.data.security.SecretEncryptionService
 import com.aminmart.passwordmanager.domain.model.CreatePasswordInput
-import com.aminmart.passwordmanager.domain.model.PasswordCategory
 import com.aminmart.passwordmanager.domain.model.PasswordEntry
 import com.aminmart.passwordmanager.domain.model.UpdatePasswordInput
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +18,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class PasswordRepository @Inject constructor(
-    private val passwordDao: PasswordDao,
+    private val database: PasswordDatabase,
     private val secretEncryptionService: SecretEncryptionService
 ) {
 
@@ -28,7 +27,7 @@ class PasswordRepository @Inject constructor(
      * Passwords are decrypted when read.
      */
     fun getAllPasswords(): Flow<List<PasswordEntry>> {
-        return passwordDao.getAllPasswords().map { entities ->
+        return database.getAllPasswords().map { entities ->
             entities.map { decryptPassword(it) }
         }
     }
@@ -38,7 +37,7 @@ class PasswordRepository @Inject constructor(
      */
     fun searchPasswords(query: String): Flow<List<PasswordEntry>> {
         val searchQuery = "%$query%"
-        return passwordDao.searchPasswords(searchQuery).map { entities ->
+        return database.searchPasswords(searchQuery).map { entities ->
             entities.map { decryptPassword(it) }
         }
     }
@@ -47,7 +46,7 @@ class PasswordRepository @Inject constructor(
      * Get a password by ID.
      */
     suspend fun getPasswordById(id: Long): PasswordEntry? {
-        val entity = passwordDao.getPasswordById(id)
+        val entity = database.getPasswordById(id)
         return entity?.let { decryptPassword(it) }
     }
 
@@ -64,20 +63,23 @@ class PasswordRepository @Inject constructor(
         val entity = PasswordEntity(
             title = input.title,
             username = input.username,
+            passwordEncrypted = encryptedSecrets.ciphertext,
             website = input.website,
+            notesEncrypted = "",
             category = input.category.toEntityCategory(),
+            icon = "",
             ciphertext = encryptedSecrets.ciphertext,
             nonce = encryptedSecrets.nonce
         )
 
-        return passwordDao.insertPassword(entity)
+        return database.insertPassword(entity)
     }
 
     /**
      * Update an existing password entry.
      */
     suspend fun updatePassword(input: UpdatePasswordInput) {
-        val existing = passwordDao.getPasswordById(input.id)
+        val existing = database.getPasswordById(input.id)
             ?: throw IllegalArgumentException("Password not found with id: ${input.id}")
 
         val title = input.title ?: existing.title
@@ -95,29 +97,31 @@ class PasswordRepository @Inject constructor(
         val updated = existing.copy(
             title = title,
             username = username,
+            passwordEncrypted = encryptedSecrets.ciphertext,
             website = website,
+            notesEncrypted = "",
             category = category.toEntityCategory(),
             ciphertext = encryptedSecrets.ciphertext,
             nonce = encryptedSecrets.nonce,
             updatedAt = System.currentTimeMillis()
         )
 
-        passwordDao.updatePassword(updated)
+        database.updatePassword(updated)
     }
 
     /**
      * Delete a password entry.
      */
     suspend fun deletePassword(id: Long) {
-        passwordDao.deletePasswordById(id)
+        database.deletePasswordById(id)
     }
 
     /**
      * Delete all passwords.
      */
     suspend fun deleteAllPasswords() {
-        passwordDao.getAllPasswordsList().forEach { entity ->
-            passwordDao.deletePassword(entity)
+        database.getAllPasswordsList().forEach { entity ->
+            database.deletePassword(entity)
         }
     }
 
@@ -133,8 +137,6 @@ class PasswordRepository @Inject constructor(
                 )
                 payload.password to payload.notes
             } catch (e: Exception) {
-                // If decryption fails, return empty strings
-                // In production, you might want to log this
                 "" to ""
             }
         } else {
@@ -158,10 +160,10 @@ class PasswordRepository @Inject constructor(
 /**
  * Extension functions to convert between domain and entity categories.
  */
-private fun PasswordCategory.toEntityCategory(): com.aminmart.passwordmanager.data.local.PasswordCategory {
-    return com.aminmart.passwordmanager.data.local.PasswordCategory.valueOf(this.name)
+private fun com.aminmart.passwordmanager.domain.model.PasswordCategory.toEntityCategory(): PasswordCategory {
+    return PasswordCategory.valueOf(this.name)
 }
 
-private fun com.aminmart.passwordmanager.data.local.PasswordCategory.toDomainCategory(): PasswordCategory {
-    return PasswordCategory.valueOf(this.name)
+private fun PasswordCategory.toDomainCategory(): com.aminmart.passwordmanager.domain.model.PasswordCategory {
+    return com.aminmart.passwordmanager.domain.model.PasswordCategory.valueOf(this.name)
 }

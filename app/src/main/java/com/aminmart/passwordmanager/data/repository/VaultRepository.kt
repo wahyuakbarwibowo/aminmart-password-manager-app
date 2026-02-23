@@ -1,6 +1,6 @@
 package com.aminmart.passwordmanager.data.repository
 
-import com.aminmart.passwordmanager.data.local.SettingsDao
+import com.aminmart.passwordmanager.data.local.PasswordDatabase
 import com.aminmart.passwordmanager.data.local.SettingsEntity
 import com.aminmart.passwordmanager.data.local.SettingsKeys
 import com.aminmart.passwordmanager.data.security.PasswordHashingService
@@ -15,7 +15,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class VaultRepository @Inject constructor(
-    private val settingsDao: SettingsDao,
+    private val database: PasswordDatabase,
     private val passwordHashingService: PasswordHashingService
 ) {
 
@@ -23,7 +23,7 @@ class VaultRepository @Inject constructor(
      * Check if the vault has been initialized.
      */
     suspend fun isVaultInitialized(): Boolean {
-        return settingsDao.hasSetting(SettingsKeys.MASTER_PASSWORD_HASH)
+        return database.hasSetting(SettingsKeys.MASTER_PASSWORD_HASH)
     }
 
     /**
@@ -40,19 +40,19 @@ class VaultRepository @Inject constructor(
 
         val passwordHash = passwordHashingService.hashPassword(masterPassword)
 
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.MASTER_PASSWORD_SALT,
                 value = passwordHash.salt
             )
         )
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.MASTER_PASSWORD_HASH,
                 value = passwordHash.hash
             )
         )
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.VAULT_INITIALIZED,
                 value = "true"
@@ -64,8 +64,8 @@ class VaultRepository @Inject constructor(
      * Verify the master password.
      */
     suspend fun verifyPassword(masterPassword: String): Boolean {
-        val saltSetting = settingsDao.getSetting(SettingsKeys.MASTER_PASSWORD_SALT)
-        val hashSetting = settingsDao.getSetting(SettingsKeys.MASTER_PASSWORD_HASH)
+        val saltSetting = database.getSetting(SettingsKeys.MASTER_PASSWORD_SALT)
+        val hashSetting = database.getSetting(SettingsKeys.MASTER_PASSWORD_HASH)
 
         if (saltSetting == null || hashSetting == null) {
             return false
@@ -93,13 +93,13 @@ class VaultRepository @Inject constructor(
 
         val passwordHash = passwordHashingService.hashPassword(newPassword)
 
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.MASTER_PASSWORD_SALT,
                 value = passwordHash.salt
             )
         )
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.MASTER_PASSWORD_HASH,
                 value = passwordHash.hash
@@ -111,7 +111,7 @@ class VaultRepository @Inject constructor(
      * Check if biometric authentication is enabled.
      */
     fun isBiometricEnabled(): Flow<Boolean> {
-        return settingsDao.getSettingFlow(SettingsKeys.BIOMETRIC_ENABLED)
+        return database.getSettingFlow(SettingsKeys.BIOMETRIC_ENABLED)
             .map { it?.value == "true" }
     }
 
@@ -119,7 +119,7 @@ class VaultRepository @Inject constructor(
      * Set biometric authentication enabled/disabled.
      */
     suspend fun setBiometricEnabled(enabled: Boolean) {
-        settingsDao.saveSetting(
+        database.saveSetting(
             SettingsEntity(
                 key = SettingsKeys.BIOMETRIC_ENABLED,
                 value = enabled.toString()
@@ -132,9 +132,9 @@ class VaultRepository @Inject constructor(
      * WARNING: This will make all data inaccessible.
      */
     suspend fun deleteVault() {
-        settingsDao.deleteSetting(SettingsKeys.MASTER_PASSWORD_SALT)
-        settingsDao.deleteSetting(SettingsKeys.MASTER_PASSWORD_HASH)
-        settingsDao.deleteSetting(SettingsKeys.VAULT_INITIALIZED)
-        settingsDao.deleteSetting(SettingsKeys.BIOMETRIC_ENABLED)
+        database.deleteSetting(SettingsKeys.MASTER_PASSWORD_SALT)
+        database.deleteSetting(SettingsKeys.MASTER_PASSWORD_HASH)
+        database.deleteSetting(SettingsKeys.VAULT_INITIALIZED)
+        database.deleteSetting(SettingsKeys.BIOMETRIC_ENABLED)
     }
 }

@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    kotlin("plugin.serialization") version "2.0.21"
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 // Load keystore properties for signing
@@ -110,8 +110,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.datastore.preferences)
@@ -121,7 +119,6 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     
-    ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
     
     testImplementation(libs.junit)

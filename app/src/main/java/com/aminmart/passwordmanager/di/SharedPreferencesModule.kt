@@ -1,6 +1,7 @@
 package com.aminmart.passwordmanager.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import dagger.Module
@@ -18,7 +19,7 @@ object SharedPreferencesModule {
     @Singleton
     fun provideEncryptedSharedPreferences(
         @ApplicationContext context: Context
-    ): androidx.preference.SharedPreferences {
+    ): SharedPreferences {
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
