@@ -25,13 +25,15 @@ class PasswordListViewModel @Inject constructor(
     val uiState: StateFlow<PasswordListUiState> = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
+    private var loadJob: kotlinx.coroutines.Job? = null
 
     init {
         loadPasswords()
     }
 
     private fun loadPasswords() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             
             combine(
@@ -63,6 +65,10 @@ class PasswordListViewModel @Inject constructor(
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
         _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun refresh() {
+        loadPasswords()
     }
 
     fun clearError() {

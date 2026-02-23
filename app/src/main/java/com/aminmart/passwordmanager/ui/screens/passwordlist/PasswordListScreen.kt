@@ -31,6 +31,10 @@ fun PasswordListScreen(
             viewModel.clearError()
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
     
     Scaffold(
         topBar = {
