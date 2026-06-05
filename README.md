@@ -42,7 +42,7 @@ AES-256-GCM → Encrypt/Decrypt Password Data
 - **UI**: Jetpack Compose with Material 3
 - **Architecture**: MVVM with Clean Architecture
 - **DI**: Hilt (Dagger)
-- **Database**: Room (SQLite)
+- **Database**: SQLite (hand-written `SQLiteOpenHelper`)
 - **Navigation**: Jetpack Navigation Compose
 - **Security**: AndroidX Security Crypto, Android Keystore
 
@@ -92,7 +92,7 @@ app-password-manager/
 │   ├── src/main/
 │   │   ├── java/com/aminmart/passwordmanager/
 │   │   │   ├── data/
-│   │   │   │   ├── local/           # Room entities & DAOs
+│   │   │   │   ├── local/           # SQLiteOpenHelper, entities
 │   │   │   │   ├── repository/      # Data repositories
 │   │   │   │   └── security/        # Encryption services
 │   │   │   ├── domain/
@@ -142,13 +142,25 @@ app-password-manager/
 CREATE TABLE passwords (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    username TEXT NOT NULL,
-    website TEXT NOT NULL,
+    username TEXT,
+    password_encrypted TEXT,
+    website TEXT,
+    notes_encrypted TEXT,
     category TEXT NOT NULL,
-    ciphertext TEXT,      -- Encrypted password + notes
+    icon TEXT,
+    ciphertext TEXT,      -- Encrypted password + notes payload
     nonce TEXT,           -- GCM nonce
-    createdAt INTEGER,
-    updatedAt INTEGER
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL
+)
+```
+
+### Settings Table
+```sql
+CREATE TABLE settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key TEXT NOT NULL UNIQUE,
+    value TEXT
 )
 ```
 
